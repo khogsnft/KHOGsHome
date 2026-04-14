@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Animated Navigation Flow</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: sans-serif;
+  }
+
+  .container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .character {
+    position: absolute;
+    bottom: 80px;
+    width: 200px;
+    transition: transform 0.6s ease-in-out;
+    z-index: 2;
+  }
+
+  .nav {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    z-index: 3;
+  }
+
+  .tab {
+    cursor: pointer;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <img src="pagebackground.png" class="background" />
+
+  <img id="character" class="character" src="characterIdleLeft.png" />
+
+  <div class="nav">
+    <div class="tab" data-index="0">Home</div>
+    <div class="tab" data-index="1">Games</div>
+    <div class="tab" data-index="2">Marketplace</div>
+    <div class="tab" data-index="3">Profile</div>
+  </div>
+</div>
+
+<script>
+const character = document.getElementById('character');
+const tabs = document.querySelectorAll('.tab');
+
+let currentIndex = 0;
+const tabPositions = [200, 500, 800, 1100];
+
+function animateCharacter(targetIndex) {
+  const goingRight = targetIndex > currentIndex;
+
+  let stepImages = goingRight
+    ? ['characterLeft1.png', 'characterLeft2.png']
+    : ['characterRight1.png', 'characterRight2.png'];
+
+  let step = 0;
+
+  const interval = setInterval(() => {
+    character.src = stepImages[step % 2];
+    step++;
+  }, 120);
+
+  character.style.transform = `translateX(${tabPositions[targetIndex]}px)`;
+
+  setTimeout(() => {
+    clearInterval(interval);
+
+    if (targetIndex === 0) {
+      character.src = 'characterFlip2.png';
+      setTimeout(() => {
+        character.src = 'characterLeft1.png';
+      }, 200);
+    } else {
+      character.src = 'characterFlip1.png';
+      setTimeout(() => {
+        character.src = 'characterRight1.png';
+      }, 200);
+    }
+
+    currentIndex = targetIndex;
+  }, 600);
+}
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const index = parseInt(tab.dataset.index);
+    animateCharacter(index);
+  });
+});
+</script>
+</body>
+</html>
