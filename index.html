@@ -30,7 +30,7 @@
     position: absolute;
     bottom: 80px;
     width: 200px;
-    transition: transform 0.6s ease-in-out;
+    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 2;
   }
 
@@ -57,9 +57,9 @@
 </head>
 <body>
 <div class="container">
-  <img src="pagebackground.png" class="background" />
+  <img src="https://ipfs.io/ipfs/bafybeihkhckfk72hi77yrr3sf7leby5agmsq5cpdvel65vw43cb6bx2zb4" class="background" />
 
-  <img id="character" class="character" src="characterIdleLeft.png" />
+  <img id="character" class="character" src="https://ipfs.io/ipfs/bafkreiheo32ehfntwpmxcars2ta4mq3hqhoheqzsr6ygyuyccbvjwpie7e" />
 
   <div class="nav">
     <div class="tab" data-index="0">Home</div>
@@ -76,39 +76,57 @@ const tabs = document.querySelectorAll('.tab');
 let currentIndex = 0;
 const tabPositions = [200, 500, 800, 1100];
 
+const assets = {
+  left1: "https://ipfs.io/ipfs/bafkreiheo32ehfntwpmxcars2ta4mq3hqhoheqzsr6ygyuyccbvjwpie7e",
+  left2: "https://ipfs.io/ipfs/bafkreifcpvhdaydz64st2ozhwh4ltgzo6dschjd4ehxtmwiqeuphlcfsby",
+  right1: "https://ipfs.io/ipfs/bafkreifdy25dy7oywuhwauo2y7jacny3lghk2vficddvbwx2rpy6f4zxqu",
+  right2: "https://ipfs.io/ipfs/bafkreic7tlur3ycl2r3zjuuxbghhfihucexc3biucb753j2576ltrogptq",
+  flip: "https://ipfs.io/ipfs/bafkreic6iy37nlapsjm2tgvfzb72fkop47lgwwthjaomyg7sl63pp7lcgy"
+};
+
 function animateCharacter(targetIndex) {
+  if (targetIndex === currentIndex) return;
+
   const goingRight = targetIndex > currentIndex;
 
-  let stepImages = goingRight
-    ? ['characterLeft1.png', 'characterLeft2.png']
-    : ['characterRight1.png', 'characterRight2.png'];
+  const walkFrames = goingRight
+    ? [assets.left1, assets.left2]
+    : [assets.right1, assets.right2];
 
-  let step = 0;
+  let frame = 0;
+  let running = true;
 
-  const interval = setInterval(() => {
-    character.src = stepImages[step % 2];
-    step++;
-  }, 120);
+  function walkLoop() {
+    if (!running) return;
+    character.src = walkFrames[frame % 2];
+    frame++;
+    setTimeout(() => requestAnimationFrame(walkLoop), 120);
+  }
 
+  walkLoop();
+
+  const distance = Math.abs(targetIndex - currentIndex);
+  const duration = 400 + distance * 200;
+
+  character.style.transition = `transform ${duration}ms cubic-bezier(0.22,1,0.36,1)`;
   character.style.transform = `translateX(${tabPositions[targetIndex]}px)`;
 
   setTimeout(() => {
-    clearInterval(interval);
+    running = false;
 
-    if (targetIndex === 0) {
-      character.src = 'characterFlip2.png';
-      setTimeout(() => {
-        character.src = 'characterLeft1.png';
-      }, 200);
-    } else {
-      character.src = 'characterFlip1.png';
-      setTimeout(() => {
-        character.src = 'characterRight1.png';
-      }, 200);
-    }
+    // Flip logic
+    character.src = assets.flip;
 
-    currentIndex = targetIndex;
-  }, 600);
+    setTimeout(() => {
+      if (targetIndex === 0) {
+        character.src = assets.left1;
+      } else {
+        character.src = assets.right1;
+      }
+      currentIndex = targetIndex;
+    }, 200);
+
+  }, duration);
 }
 
 tabs.forEach(tab => {
@@ -120,3 +138,4 @@ tabs.forEach(tab => {
 </script>
 </body>
 </html>
+
