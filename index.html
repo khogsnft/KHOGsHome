@@ -28,10 +28,13 @@
 
   .character {
     position: absolute;
-    bottom: 80px;
-    width: 200px;
-    transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    bottom: 0; /* anchored to bottom */
+    width: 703px;
+    height: 1080px;
+    object-fit: contain;
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); /* slower */
     z-index: 2;
+    will-change: transform;
   }
 
   .nav {
@@ -100,13 +103,13 @@ function animateCharacter(targetIndex) {
     if (!running) return;
     character.src = walkFrames[frame % 2];
     frame++;
-    setTimeout(() => requestAnimationFrame(walkLoop), 120);
+    setTimeout(() => requestAnimationFrame(walkLoop), 160); // slower frame swap
   }
 
   walkLoop();
 
   const distance = Math.abs(targetIndex - currentIndex);
-  const duration = 400 + distance * 200;
+  const duration = 800 + distance * 400; // slower travel
 
   character.style.transition = `transform ${duration}ms cubic-bezier(0.22,1,0.36,1)`;
   character.style.transform = `translateX(${tabPositions[targetIndex]}px)`;
@@ -114,7 +117,6 @@ function animateCharacter(targetIndex) {
   setTimeout(() => {
     running = false;
 
-    // Flip logic
     character.src = assets.flip;
 
     setTimeout(() => {
@@ -124,7 +126,7 @@ function animateCharacter(targetIndex) {
         character.src = assets.right1;
       }
       currentIndex = targetIndex;
-    }, 200);
+    }, 250);
 
   }, duration);
 }
@@ -138,4 +140,5 @@ tabs.forEach(tab => {
 </script>
 </body>
 </html>
+
 
