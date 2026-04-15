@@ -28,11 +28,13 @@
 
   .character {
     position: absolute;
-    bottom: 0; /* anchored to bottom */
-    width: 703px;
-    height: 1080px;
+    bottom: 0;
+    height: 100vh; /* scale relative to viewport height */
+    width: auto;
+    max-width: none;
     object-fit: contain;
-    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1); /* slower */
+    transform-origin: bottom center;
+    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1); /* even slower */
     z-index: 2;
     will-change: transform;
   }
@@ -92,9 +94,10 @@ function animateCharacter(targetIndex) {
 
   const goingRight = targetIndex > currentIndex;
 
+  // NOTE: assets were mislabeled, so we intentionally swap logic
   const walkFrames = goingRight
-    ? [assets.left1, assets.left2]
-    : [assets.right1, assets.right2];
+    ? [assets.right1, assets.right2]  // actually moving RIGHT
+    : [assets.left1, assets.left2];   // actually moving LEFT
 
   let frame = 0;
   let running = true;
@@ -121,9 +124,9 @@ function animateCharacter(targetIndex) {
 
     setTimeout(() => {
       if (targetIndex === 0) {
-        character.src = assets.left1;
+        character.src = assets.right1; // HOME idle should face LEFT visually (swapped asset)
       } else {
-        character.src = assets.right1;
+        character.src = assets.left1; // other tabs face RIGHT visually (swapped asset)
       }
       currentIndex = targetIndex;
     }, 250);
@@ -140,5 +143,3 @@ tabs.forEach(tab => {
 </script>
 </body>
 </html>
-
-
